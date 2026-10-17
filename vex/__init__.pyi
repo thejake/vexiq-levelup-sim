@@ -543,7 +543,11 @@ class Gyro:
 class DriveTrain:
     """Drives the robot using the left and right motors together.
     This is the plain version with no gyro; SmartDrive (with the inertial)
-    is what VEXcode normally generates and turns more accurately."""
+    is what VEXcode normally generates and turns more accurately.
+
+    One command at a time: starting a new drive/turn REPLACES an unfinished
+    one (wait=False doesn't queue or blend them — it lets the rest of your
+    program run during the move; use is_moving() to wait for it later)."""
 
     def __init__(self, lm: Motor | MotorGroup, rm: Motor | MotorGroup,
                  wheelTravel: float = ..., trackWidth: float = ...,
@@ -567,7 +571,8 @@ class DriveTrain:
         INCHES — write drive_for(FORWARD, 300, MM) to be safe.
         Blocks until done; if the robot hits something it pushes until the
         set_timeout limit, so set a timeout! wait=False returns right away
-        (check is_done() / is_moving() yourself)."""
+        (check is_done() / is_moving() yourself) — but the NEXT drivetrain
+        command cancels this one, so finish or wait before issuing it."""
     def turn(self, direction: TurnType.TurnType, velocity: float | None = ...,
              units: vexEnum = ...) -> None:
         """Start spinning in place (LEFT or RIGHT) and keep going until
