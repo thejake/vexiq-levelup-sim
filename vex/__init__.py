@@ -24,8 +24,8 @@ def _maybe_reexec():
         return
     main = sys.modules.get("__main__")
     script = getattr(main, "__file__", None)
-    if not script:
-        return  # REPL / embedded use: leave it alone
+    if not script or not os.path.isfile(script):
+        return  # REPL, stdin, or embedded use: leave it alone
     repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     env = dict(os.environ)
     env["PYTHONPATH"] = repo_root + os.pathsep + env.get("PYTHONPATH", "")
@@ -38,7 +38,7 @@ _maybe_reexec()
 
 from vexsim import runtime as _rt
 from vexsim.runtime import VexSimError, VexSimNotImplemented
-from vexsim.geometry import normalize_deg, signed_err_deg
+from vexsim.geometry import normalize_deg as _normalize_deg, signed_err_deg as _signed_err_deg
 
 
 def _clock():
@@ -756,9 +756,9 @@ class Inertial:
         return _clock().now() < self._calibrating_until
 
     def heading(self, units=DEGREES):
-        h = normalize_deg(self._raw_cw() + self._heading_offset)
+        h = _normalize_deg(self._raw_cw() + self._heading_offset)
         h += _world().heading_noise_deg()
-        return _deg_to_rot(normalize_deg(h), units)
+        return _deg_to_rot(_normalize_deg(h), units)
 
     def rotation(self, units=DEGREES):
         return _deg_to_rot(self._raw_cw() + self._rotation_offset, units)
@@ -949,7 +949,7 @@ class DriveTrain:
     def turn_to_heading(self, angle, units=DEGREES, velocity=None,
                         units_v=None, wait=True):
         cmd = _DriveCommand(
-            "turn_to", target_cw=normalize_deg(_rot_to_deg(angle, units)),
+            "turn_to", target_cw=_normalize_deg(_rot_to_deg(angle, units)),
             vel_pct=self._vel(velocity, units_v, self._turn_vel_pct),
             deadline=self._deadline())
         self._start(cmd, wait)
