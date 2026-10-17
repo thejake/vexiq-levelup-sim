@@ -76,7 +76,16 @@ uv add "vexiq-sim @ git+https://github.com/thejake/vexiq-levelup-sim"
 Now any `from vex import *` program in that folder runs in the simulator
 (`uv run python my_auton.py`), and your workspace is just your own files —
 the sim hides in `.venv`. For F5 debugging, add a `.vscode/launch.json`
-with the same config this repo uses (module `vexsim`, args `["${file}"]`).
+with the same config this repo uses (module `vexsim`, args `["${file}"]`),
+and silence Pylance's star-import style warning in `.vscode/settings.json`
+(`from vex import *` is the canonical VEXcode idiom):
+
+```json
+"python.analysis.diagnosticSeverityOverrides": {
+    "reportWildcardImportFromLibrary": "none"
+}
+```
+
 Drop a `simconfig.toml` next to your programs to configure the robot.
 Update to the latest simulator with
 `uv lock --upgrade-package vexiq-sim && uv sync`.
