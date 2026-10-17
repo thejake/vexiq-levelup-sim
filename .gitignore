@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.playwright-mcp/
+
+# local-only: VEX copyrighted material + scraped samples, and family notes
+reference/
+HANDOFF.md

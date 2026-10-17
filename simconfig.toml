@@ -1,0 +1,50 @@
+# vexsim configuration. Everything here is optional — delete a line to get
+# the default. Units: inches unless the name says otherwise.
+
+[robot]
+length_in = 11.0
+width_in = 9.0
+# Under ~5.8 in the robot fits beneath the elevated mid-field beams.
+height_in = 11.0
+
+# The 0.75-in ramped floor strips: false = drive over them at reduced
+# speed (real fields are built for this); true = treat as solid.
+strips_block = false
+strip_slow_factor = 0.6
+
+# Skills start: middle of the start zone, facing up-field (+Y).
+start_x = 48.5
+start_y = 9.0
+start_theta_deg = 90.0
+
+# Which ports grab bean bags when spinning forward (eject on reverse).
+# Match this to the port(s) your intake motor uses in your program.
+intake_ports = [6]
+
+# Distance sensor mount: inches from robot center (+forward), facing angle
+# relative to the robot's heading (0 = straight ahead), and height off the
+# floor (at ~6.25 in it can see the elevated beams; lower, it can't).
+dist_forward_in = 5.5
+dist_lateral_in = 0.0
+dist_facing_deg = 0.0
+dist_height_in = 3.0
+dist_max_range_mm = 2000.0
+
+# If your program drives raw Motors with no DriveTrain/SmartDrive, list the
+# ports here so the sim knows which motors are wheels:
+# left_drive_ports = [1]
+# right_drive_ports = [2]
+
+# Start carrying the yellow Skills preload?
+preload_yellow = true
+
+[realism]
+# All off by default. Turn these up to practice against imperfection.
+wheel_slip = 0.0            # 0.05 = up to 5% less travel per step
+heading_noise_deg = 0.0     # 0.5 = +/- about half a degree of gyro noise
+distance_noise_mm = 0.0     # 5.0 = distance sensor jitter
+turn_overshoot_deg = 0.0    # 2.0 = turns blow past the target a bit
+
+# speed = 1.0               # sim speed multiplier (also -/+ keys in the window)
+# pixels_per_inch = 9       # window size
+# skills_loads = 8          # extra bags available at the load zone ('b' key)
