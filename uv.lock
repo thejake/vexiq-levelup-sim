@@ -40,7 +40,7 @@ wheels = [
 
 [[package]]
 name = "vexiq-sim"
-version = "0.1.1"
+version = "0.1.2"
 source = { editable = "." }
 dependencies = [
     { name = "pygame-ce" },

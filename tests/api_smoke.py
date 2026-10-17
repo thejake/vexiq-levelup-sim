@@ -53,7 +53,7 @@ assert flag == [1]
 
 # touchled
 tl.set_color(Color.RED)
-assert tl.color_rgb == (255, 0, 0)
+assert tl.color_rgb == (255, 0, 0)  # type: ignore[attr-defined]  # sim internal
 tl.off()
 
 # brain screen
@@ -61,7 +61,7 @@ brain.screen.set_cursor(1, 1)
 brain.screen.print("row one", 1.2345, precision=3)
 brain.screen.next_row()
 brain.screen.print("row two")
-rows, draws = brain.screen.snapshot()
+rows, draws = brain.screen.snapshot()  # type: ignore[attr-defined]  # sim internal
 assert rows[0].startswith("row one 1.234"), rows[0]
 assert rows[1] == "row two"
 brain.screen.draw_circle(80, 54, 10)
