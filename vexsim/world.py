@@ -455,6 +455,15 @@ class World:
                 total += dev._actual_dps
         return total
 
+    def _arm_height_in(self) -> float:
+        """How high the arm holds the intake, from the arm motor position."""
+        for dev in runtime.devices:
+            if getattr(dev, "port", None) in self.config.robot.arm_ports \
+                    and hasattr(dev, "_pos"):
+                return max(0.0, (dev._pos + dev._pos_offset)
+                           * self.config.robot.arm_in_per_deg)
+        return 0.0
+
     def _update_bags(self) -> None:
         cfg = self.config.robot
         with self._lock:
@@ -478,9 +487,7 @@ class World:
         elif intake < -30.0 and self.carried is not None:
             bag = self.carried
             bag.carried = False
-            bag.x = x + fx * (cfg.length_in / 2 + 2.5)
-            bag.y = y + fy * (cfg.length_in / 2 + 2.5)
-            self._clamp_bag(bag)
+            self._drop_bag(bag, x, y, fx, fy)
             self.carried = None
             self._eject_cooldown_until = now + 0.8
 
@@ -521,6 +528,60 @@ class World:
                 return True
         return False
 
+    def _drop_bag(self, bag, x, y, fx, fy) -> None:
+        """Eject the carried bag. With the arm raised, the bag drops higher
+        AND further forward (four-bar-like: ~0.9" out per 1" up), so a
+        robot parked against a pyramid can reach the inner levels."""
+        cfg = self.config.robot
+        arm_h = self._arm_height_in()
+        forward = cfg.length_in / 2 + 2.5 + 0.9 * arm_h
+        px = x + fx * forward
+        py = y + fy * forward
+        for color in field.PYRAMIDS:
+            level = field.pyramid_level_at(color, px, py)
+            if level is None:
+                continue
+            edge, surface_h, pts, name = level
+            if arm_h >= surface_h + 1.0:
+                # placed on the pyramid; floppy bags sometimes slip a level
+                if random.random() < self.config.realism.place_slip_prob:
+                    px, py = self._demote_placement(color, px, py)
+                bag.x, bag.y = px, py
+                self._clamp_bag(bag)
+                return
+            # arm too low: the bag hits the pyramid side and falls at the base
+            px, py = self._outside_pyramid(color, x, y, px, py)
+            bag.x, bag.y = px, py
+            self._clamp_bag(bag)
+            return
+        bag.x, bag.y = px, py
+        self._clamp_bag(bag)
+
+    def _demote_placement(self, color, px, py):
+        """Slide a placed bag one level outward (L3->L2, ..., L1->floor)."""
+        cx, cy = field.PYRAMID_CORNERS[color]
+        d = max(abs(px - cx), abs(py - cy), 0.1)
+        levels = field.PYRAMID_LEVELS
+        idx = next((i for i, lv in enumerate(levels) if d <= lv[0]), len(levels) - 1)
+        if idx + 1 < len(levels):
+            target = (levels[idx][0] + levels[idx + 1][0]) / 2
+        else:
+            target = levels[-1][0] + 3.0  # off the bottom step onto the floor
+        s = target / d
+        return cx + (px - cx) * s, cy + (py - cy) * s
+
+    def _outside_pyramid(self, color, rx, ry, px, py):
+        """Walk a dropped bag back toward the robot until it is off the
+        pyramid footprint (it fell down the side)."""
+        rect = field.PYRAMIDS[color]
+        dx, dy = rx - px, ry - py
+        n = math.hypot(dx, dy) or 1.0
+        dx, dy = dx / n, dy / n
+        while rect.contains_point(px, py):
+            px += dx
+            py += dy
+        return px + dx * 2.0, py + dy * 2.0
+
     def _clamp_bag(self, bag) -> None:
         bag.x = min(max(bag.x, field.BAG_W / 2), field.FIELD_W - field.BAG_W / 2)
         bag.y = min(max(bag.y, field.BAG_H / 2), field.FIELD_H - field.BAG_H / 2)
@@ -537,16 +598,22 @@ class World:
         self.loads_remaining -= 1
         return True
 
-    # ---- scoring ----
+    # ---- scoring (points per the v2.1 table: floor 1, L1 3, L2 6, L3 12) ----
 
     def _update_score(self) -> None:
         score = {"red": 0, "blue": 0}
-        for goal_color, zone in field.FLOOR_GOALS.items():
-            for bag in self.bags:
-                if bag.carried:
-                    continue
+        for bag in self.bags:
+            if bag.carried:
+                continue
+            for goal_color, zone in field.FLOOR_GOALS.items():
                 if bag.color in (goal_color, "yellow") and zone.contains_aabb(bag.aabb()):
                     score[goal_color] += 1
+            for pcolor in field.PYRAMIDS:
+                if bag.color not in (pcolor, "yellow"):
+                    continue  # SC4d: must match the pyramid's color or be yellow
+                level = field.pyramid_level_at(pcolor, bag.x, bag.y)
+                if level is not None:
+                    score[pcolor] += level[2]
         self.score = score
 
     # ---- distance history for object_velocity ----

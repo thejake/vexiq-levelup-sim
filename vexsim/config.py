@@ -46,6 +46,14 @@ class RobotConfig:
 
     # Intake: motors on these ports grab/eject bean bags.
     intake_ports: list[int] = field(default_factory=lambda: [6])
+
+    # Arm: motors on these ports raise the intake for pyramid placement.
+    # Arm height = motor position (deg) * arm_in_per_deg; the drop point
+    # also reaches forward as the arm rises (four-bar-like: ~0.9" out per
+    # 1" up). Default: 400 deg -> 10" high, dropping ~11.5" past the front,
+    # which lands on L3 when parked against the pyramid.
+    arm_ports: list[int] = field(default_factory=lambda: [10])
+    arm_in_per_deg: float = 0.025
     # A bag can be picked up when its center is within this zone in front
     # of the robot (inches).
     pickup_reach_in: float = 3.0
@@ -73,6 +81,9 @@ class Realism:
     distance_noise_mm: float = 0.0
     # After a turn completes, overshoot by ~N(overshoot_deg, overshoot_deg/2).
     turn_overshoot_deg: float = 0.0
+    # Chance (0..1) that a pyramid placement slips one level down
+    # (L3 -> L2, L1 -> floor). Bean bags are floppy; placements miss.
+    place_slip_prob: float = 0.0
 
 
 @dataclass

@@ -89,14 +89,16 @@ class Renderer:
         self._zone(field.LOAD_ZONES["blue"], BLUE, 35, "LOAD")
         self._zone(field.START_ZONE, (200, 200, 200), 25, "START")
 
-        # pyramids (goal footprints)
+        # pyramids: footprint plus the L2/L3 level rings, corner-anchored
         for color, rect in field.PYRAMIDS.items():
             c = RED if color == "red" else BLUE
-            r = self.rect_px(rect)
-            pygame.draw.rect(s, c, r, 3)
-            inner = r.inflate(-r.width // 3, -r.height // 3)
-            pygame.draw.rect(s, c, inner, 2)
-            self._label(rect.cx, rect.cy, "PYR", c)
+            pygame.draw.rect(s, c, self.rect_px(rect), 3)
+            cx, cy = field.PYRAMID_CORNERS[color]
+            for edge, _h, _pts, name in field.PYRAMID_LEVELS[:2]:
+                x0, x1 = (0.0, edge) if cx == 0 else (cx - edge, cx)
+                y0, y1 = (0.0, edge) if cy == 0 else (cy - edge, cy)
+                pygame.draw.rect(s, c, self.rect_px(field.AABB(x0, y0, x1, y1)), 2)
+            self._label(rect.cx, rect.cy, "L1-L3", c)
 
         # ramped floor strips (0.75" tall, drive-over-able)
         for rect in field.STRIPS:
@@ -232,9 +234,10 @@ class Renderer:
         line(f"program: {w.program_status}",
              HUD_DIM if w.program_status == "running" else (240, 180, 90))
         y += 4
-        line(f"score   red {w.score['red']}   blue {w.score['blue']}", (240, 220, 140))
+        line(f"score   red {w.score['red']} pts   blue {w.score['blue']} pts", (240, 220, 140))
         carried = w.carried.color if w.carried else "-"
-        line(f"carrying: {carried}    loads left: {w.loads_remaining}")
+        arm = w._arm_height_in()
+        line(f"carrying: {carried}   arm: {arm:4.1f} in   loads: {w.loads_remaining}")
         y += 6
 
         # pose and sensors

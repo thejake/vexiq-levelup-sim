@@ -30,4 +30,14 @@ assert s["score"]["red"] == 1, s["score"]
 print("ok: red goal = 1")
 EOF
 
+echo "== pyramid mechanics: preload reaches L3 (12 pts) =="
+uv run python -m vexsim examples/pyramid_place.py --headless --max-sim-seconds 35 \
+    --dump-state "$out/pyr.json" > /dev/null
+python3 -c "
+import json, sys
+s = json.load(open('$out/pyr.json'))
+assert s['score']['red'] == 12, s['score']
+print('ok: red pyramid L3 = 12 pts')
+"
+
 echo "ALL TESTS PASS"

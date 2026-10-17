@@ -21,6 +21,13 @@ start_theta_deg = 90.0
 # Match this to the port(s) your intake motor uses in your program.
 intake_ports = [6]
 
+# Arm motor port(s): raising the arm lifts the intake, and the drop point
+# reaches forward ~0.9 in per 1 in of height (like a four-bar). With
+# arm_in_per_deg = 0.025, spinning the arm to 400 deg = 10 in high, enough
+# to place on the pyramid's L3 when parked against its base.
+arm_ports = [10]
+arm_in_per_deg = 0.025
+
 # Distance sensor mount: inches from robot center (+forward), facing angle
 # relative to the robot's heading (0 = straight ahead), and height off the
 # floor (at ~6.25 in it can see the elevated beams; lower, it can't).
@@ -44,6 +51,7 @@ wheel_slip = 0.0            # 0.05 = up to 5% less travel per step
 heading_noise_deg = 0.0     # 0.5 = +/- about half a degree of gyro noise
 distance_noise_mm = 0.0     # 5.0 = distance sensor jitter
 turn_overshoot_deg = 0.0    # 2.0 = turns blow past the target a bit
+place_slip_prob = 0.0       # 0.25 = 1-in-4 pyramid placements slip a level
 
 # speed = 1.0               # sim speed multiplier (also -/+ keys in the window)
 # pixels_per_inch = 9       # window size

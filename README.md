@@ -113,8 +113,15 @@ Update to the latest simulator with
 - **Controller** — keyboard-driven (see table above).
 - **Bean bags** — the intake motor (port set in `simconfig.toml`) grabs the
   bag in front when spinning forward (carries one), ejects on reverse. Loose
-  bags get bulldozed. Floor goals score live: 1 point per bag fully inside,
-  own color or yellow.
+  bags get bulldozed.
+- **Scoring (live, per the v2.1 points table)** — floor goals 1 pt; pyramid
+  levels L1/L2/L3 = 3/6/12 pts (color match or yellow, rings per Appendix A).
+  L4 (16 pts, yellow only, 24" up) is not modeled.
+- **Pyramid placement** — raise the arm motor (port in `simconfig.toml`),
+  park against the pyramid, eject: the bag drops higher and further forward
+  as the arm rises (four-bar-like), landing on whichever level it reaches —
+  too low and it falls down the side. A `place_slip_prob` realism knob makes
+  placements slip a level. `examples/pyramid_place.py` demos the mechanics.
 - **Events, Thread, Timer, wait/sleep** — run against the sim clock.
 
 Not modeled (raises `VexSimNotImplemented`): Pneumatic, Vision/AI Vision,

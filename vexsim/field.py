@@ -61,6 +61,31 @@ PYRAMIDS = {
     "red": AABB(FIELD_W - 19.25, 0.0, FIELD_W, 19.25),
 }
 
+PYRAMID_CORNERS = {"blue": (0.0, FIELD_H), "red": (FIELD_W, 0.0)}
+
+# Scoring levels, measured from the pyramid's field corner (Chebyshev
+# distance): (outer edge of the ring, surface height, points, name).
+# Nested squares 6.25/8.5/14.5/20.5 per Appendix A page A5; L1's outer
+# edge is the 19.25 on-field footprint. Points per the v2.1 points table.
+PYRAMID_LEVELS = [
+    (8.5, 8.0, 12, "L3"),
+    (14.5, 5.0, 6, "L2"),
+    (19.25, 2.5, 3, "L1"),
+]
+
+
+def pyramid_level_at(color: str, x: float, y: float):
+    """The (edge, surface_height, points, name) level ring under a field
+    point, or None if the point is outside that pyramid's footprint."""
+    if not PYRAMIDS[color].contains_point(x, y):
+        return None
+    cx, cy = PYRAMID_CORNERS[color]
+    d = max(abs(x - cx), abs(y - cy))
+    for level in PYRAMID_LEVELS:
+        if d <= level[0]:
+            return level
+    return PYRAMID_LEVELS[-1]
+
 # L4 goals: inverted cones (7" octagon top) on 24"-tall poles. The robot
 # only collides with the pole; the cone top is at 24".
 L4_TOPS = [Circle(60.5, 42.5, 3.5), Circle(36.5, 30.5, 3.5)]
