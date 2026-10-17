@@ -2,7 +2,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Run in simulator",
+            // F5: run the current file in the simulator with full debugging —
+            // breakpoints, stepping, and variable inspection work inside your
+            // robot program. When you pause at a breakpoint the sim clock
+            // pauses too (all threads suspend), so the robot waits for you.
+            "name": "Debug in simulator",
             "type": "debugpy",
             "request": "launch",
             "module": "vexsim",
@@ -10,6 +14,29 @@
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
             "justMyCode": true
+        },
+        {
+            // Same, at 4x sim speed — handy for skipping long waits while
+            // still being able to break somewhere later in the program.
+            "name": "Debug in simulator (4x speed)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "vexsim",
+            "args": ["${file}", "--speed", "4"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            // Step into the simulator's own code (vex module, physics) too.
+            "name": "Debug simulator internals",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "vexsim",
+            "args": ["${file}"],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": false
         }
     ]
 }

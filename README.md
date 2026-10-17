@@ -29,9 +29,20 @@ uv sync
 uv run python examples/first_drive.py
 ```
 
-That's it — importing `vex` relaunches the file under the simulator. In VS
-Code, open any program and press F5 ("Run in simulator"). Equivalent long
-form: `uv run python -m vexsim examples/first_drive.py`.
+That's it — importing `vex` relaunches the file under the simulator.
+Equivalent long form: `uv run python -m vexsim examples/first_drive.py`.
+
+### VS Code
+
+Open the repo folder (accept the recommended Python extensions), open any
+robot program, and press **F5** ("Debug in simulator"). Breakpoints,
+stepping, and variable inspection work inside your program — and when you
+pause at a breakpoint, the simulation clock pauses with you, so the robot
+freezes mid-field until you continue. Two more launch configs in the
+dropdown: a 4x-speed variant for skipping long autons, and "Debug simulator
+internals" if you want to step into the `vex` module or the physics.
+**Ctrl+F5** runs without the debugger, and the default test task
+(Tasks: Run Test Task) runs the headless regression suite.
 
 Your code runs against a simulated clock, so pausing (space) pauses your
 program, and running at 4x speed runs your `wait()`s at 4x too.
