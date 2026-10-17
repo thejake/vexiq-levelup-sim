@@ -62,6 +62,25 @@ program, and running at 4x speed runs your `wait()`s at 4x too.
 | `z x` `n m` `r f` `t g` | controller L / R / E / F button pairs |
 | esc | quit |
 
+## Use it as a library (clean workspace)
+
+You don't have to work inside this repo. Make a project that holds only
+your robot programs and pull the simulator in as a dependency:
+
+```sh
+mkdir my-robot-code && cd my-robot-code
+uv init --python 3.12
+uv add "vexiq-sim @ git+https://github.com/thejake/vexiq-levelup-sim"
+```
+
+Now any `from vex import *` program in that folder runs in the simulator
+(`uv run python my_auton.py`), and your workspace is just your own files —
+the sim hides in `.venv`. For F5 debugging, add a `.vscode/launch.json`
+with the same config this repo uses (module `vexsim`, args `["${file}"]`).
+Drop a `simconfig.toml` next to your programs to configure the robot.
+Update to the latest simulator with
+`uv lock --upgrade-package vexiq-sim && uv sync`.
+
 ## What's simulated
 
 - **Drivetrain / SmartDrive** — `drive`, `drive_for`, `turn`, `turn_for`,
