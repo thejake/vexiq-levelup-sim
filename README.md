@@ -53,7 +53,8 @@ program, and running at 4x speed runs your `wait()`s at 4x too.
 |---|---|
 | space | pause / resume |
 | `-` / `=` | slower / faster (0.25x–16x) |
-| `d` | toggle the distance-sensor ray |
+| `v` | toggle the distance-sensor ray |
+| `p` | print the robot's pose (inches + mm) to the terminal |
 | `b` | drop a Skills load bag into the red load zone |
 | `1`–`4` | press Touch LED 1–4 |
 | `,` `.` `/` | brain Left / Check / Right buttons |
@@ -61,6 +62,18 @@ program, and running at 4x speed runs your `wait()`s at 4x too.
 | arrows | controller right stick (axisC/axisD) |
 | `z x` `n m` `r f` `t g` | controller L / R / E / F button pairs |
 | esc | quit |
+
+The controller keys (WASD, arrows, button pairs) feed a **virtual
+controller** — they only move the robot if the program you're running
+reads the controller and drives the motors, exactly like the real robot
+in driver control. `examples/drive_manual.py` is such a program:
+
+```sh
+uv run python examples/drive_manual.py
+```
+
+Click the window, then w/s to drive, left/right arrows to turn, n/m for
+the intake, r/f for the arm.
 
 ## Use it as a library (clean workspace)
 

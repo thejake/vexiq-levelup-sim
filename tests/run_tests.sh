@@ -30,6 +30,18 @@ assert s["score"]["red"] == 1, s["score"]
 print("ok: red goal = 1")
 EOF
 
+echo "== driver control idles cleanly (no keys pressed) =="
+uv run python -m vexsim examples/drive_manual.py --headless --max-sim-seconds 3 \
+    --dump-state "$out/dm.json" > /dev/null
+python3 - "$out/dm.json" <<'EOF'
+import json, sys
+s = json.load(open(sys.argv[1]))
+p = s["pose"]
+assert abs(p["x"] - 48.5) < 0.1 and abs(p["y"] - 9.0) < 0.1, p
+assert s["program_status"] == "running", s["program_status"]
+print("ok: driver loop runs, robot holds still")
+EOF
+
 echo "== pyramid mechanics: preload reaches L3 (12 pts) =="
 uv run python -m vexsim examples/pyramid_place.py --headless --max-sim-seconds 35 \
     --dump-state "$out/pyr.json" > /dev/null

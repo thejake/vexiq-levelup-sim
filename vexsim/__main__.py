@@ -98,10 +98,18 @@ def main() -> None:
                         speed = min(speed * 2, 16.0)
                     elif event.key == pygame.K_MINUS:
                         speed = max(speed / 2, 0.25)
-                    elif event.key == pygame.K_d:
+                    elif event.key == pygame.K_v:
+                        # ('d' belongs to the controller left stick)
                         renderer.show_ray = not renderer.show_ray
                     elif event.key == pygame.K_b:
                         world.add_load_bag()
+                    elif event.key == pygame.K_p:
+                        with world._lock:
+                            px, py = world.x, world.y
+                            hd = (world._theta0 - world.theta) % 360
+                        print(f"[vexsim] pose: x {px:.1f} y {py:.1f} in | "
+                              f"x {px * 25.4:.0f} y {py * 25.4:.0f} mm | "
+                              f"heading {hd:.1f} deg")
                     elif event.key == pygame.K_ESCAPE:
                         running = False
 
