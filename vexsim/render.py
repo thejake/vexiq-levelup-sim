@@ -245,6 +245,7 @@ class Renderer:
             px, py, ptheta = w.x, w.y, w.theta
         heading = (w._theta0 - ptheta) % 360
         line(f"pose  x {px:5.1f}  y {py:5.1f} in", HUD_DIM)
+        line(f"      x {px * 25.4:5.0f}  y {py * 25.4:5.0f} mm", HUD_DIM)
         line(f"heading {heading:6.1f}°  (cw, 0 = start)", HUD_DIM)
         mm = w._last_ray_mm
         line(f"distance: {mm:5.0f} mm" if mm is not None else "distance: ---", HUD_DIM)

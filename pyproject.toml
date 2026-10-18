@@ -1,6 +1,6 @@
 [project]
 name = "vexiq-sim"
-version = "0.2.0"
+version = "0.2.1"
 description = "2D simulator for VEX IQ Python programs on the Level Up field"
 requires-python = ">=3.12"
 dependencies = [
